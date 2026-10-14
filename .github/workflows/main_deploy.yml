@@ -1,0 +1,48 @@
+name: Deploy and Validate Metadata
+
+on:
+  pull_request:
+    branches:
+      - main
+      - DEV
+  push:
+    branches:
+      - main
+
+jobs:
+  validate-and-deploy:
+    name: "Tests, validation et déploiement Salesforce"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installer Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Tests unitaires LWC (Jest)
+        run: |
+          npm install
+          npm run test:unit
+
+      - name: Authentification Salesforce
+        # Secret SFDX_AUTH_URL à créer dans GitHub : Settings > Secrets and variables > Actions
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL }}" > ./authfile.txt
+          sf org login sfdx-url --sfdx-url-file ./authfile.txt --alias target-org
+          rm ./authfile.txt
+
+      - name: Validation à blanc (Pull Request) - tests Apex sans déployer
+        if: github.event_name == 'pull_request'
+        run: sf project deploy start --source-dir force-app --dry-run --test-level RunLocalTests --target-org target-org --wait 30
+
+      - name: Déploiement sur Salesforce (push sur main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: sf project deploy start --source-dir force-app --test-level RunLocalTests --target-org target-org --wait 30
