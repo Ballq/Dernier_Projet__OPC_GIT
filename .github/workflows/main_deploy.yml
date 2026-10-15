@@ -29,7 +29,7 @@ jobs:
 
       - name: Tests unitaires LWC (Jest)
         run: |
-          npm install
+          npm install --legacy-peer-deps
           npm run test:unit
 
       - name: Authentification Salesforce
