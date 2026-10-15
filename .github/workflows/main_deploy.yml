@@ -25,7 +25,7 @@ jobs:
           node-version: 20
 
       - name: Installer Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.140.6
 
       - name: Tests unitaires LWC (Jest)
         run: |
