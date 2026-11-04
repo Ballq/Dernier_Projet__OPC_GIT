@@ -1,14 +1,17 @@
 <template>
     <template lwc:if={isLoaded}>
         <template lwc:if={hasOrders}>
+            <!-- Total superieur a 0 : bandeau vert avec le montant total des commandes activees. -->
             <div class="slds-box slds-theme_success">
                 <h1>Total des Commandes : {sumOrdersOfCurrentAccount}</h1>
             </div>
         </template>
         <template lwc:else>
+            <!-- Aucune commande activee ou total egal a 0 : bandeau rouge avec le message d erreur. -->
             <div class="slds-box slds-theme_error">
                 <h1>Erreur, pas de commandes rattachées à ce compte ou le montant des commandes est égale à 0.</h1>
             </div>
         </template>
+        <!-- Tout ce bloc ne s affiche qu une fois la reponse d Apex arrivee (isLoaded), pour eviter un bandeau rouge pendant le chargement. -->
     </template>
 </template>
